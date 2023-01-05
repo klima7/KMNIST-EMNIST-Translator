@@ -1,0 +1,7 @@
+.idea/**
+**.pyc
+**/__pycache__/**
+data/emnist
+data/kmnist
+datasets/**
+!datasets/generate.ipynb

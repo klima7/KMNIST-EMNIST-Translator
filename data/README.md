@@ -1,0 +1,1 @@
+KMNIST and EMNIST datasets should be placed here - [download link](https://drive.google.com/file/d/18zMA8277A19fXgLa41FGXkX6EH8-oiic/view?usp=sharing)

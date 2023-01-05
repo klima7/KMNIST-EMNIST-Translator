@@ -1,0 +1,12 @@
+streamlit
+opencv-python
+scikit-image
+tqdm
+numpy
+tensorflow
+matplotlib
+einops
+umap-learn
+umap-learn[plot]
+scikit-learn
+yellowbrick
