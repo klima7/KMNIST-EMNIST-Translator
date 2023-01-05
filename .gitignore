@@ -5,3 +5,5 @@ data/emnist
 data/kmnist
 datasets/**
 !datasets/generate.ipynb
+configs/**
+!configs/.gitkeep
