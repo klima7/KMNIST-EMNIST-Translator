@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
+import os.path
 
 import numpy as np
 from keras.models import Model, Sequential
@@ -11,7 +12,7 @@ class BaseAutoencoder(ABC):
 
     def __init__(self, name):
         self.name = name
-        self.path = Path('configs') / name
+        self.path = Path(os.path.dirname(__file__)) / '..' / '..' / 'configs' / name
         self.quantities = np.array([])
         self.characters = np.array([])
 

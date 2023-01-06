@@ -48,7 +48,8 @@ def get_number_of_clusters_with_eigen_values(encoded_characters, ax, n_samples=N
     lambdas = np.sort(lambdas)[:50]
     ax.plot(lambdas)
     
-    elbow = np.nonzero(lambdas < 0.4)[0][-1]
+    diffs = lambdas[1:] - lambdas[:-1]
+    elbow = np.argmax(diffs)
     ax.axvline(x=elbow, color='black', linestyle='--')
     return elbow
 
