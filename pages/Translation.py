@@ -1,3 +1,5 @@
+from io import BytesIO
+
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
@@ -5,7 +7,7 @@ from einops import rearrange
 
 from lib.autoencoders import EMNIST_AUTOENCODERS, KMNIST_AUTOENCODERS, get_autoencoder_by_name
 from lib.translation import match_clusters
-from lib.utils import visualize_clusters, get_number_of_clusters_with_eigen_values, cluster, sort_characters_by_labels, visualize_sorted_characters
+from lib.utils import visualize_clusters, get_number_of_clusters_with_eigen_values, cluster, sort_characters_by_labels, visualize_sorted_characters, visualize_clusters_learned_by_autoencoder, visualize_mapping
 from lib.images import zip_images, get_uploaded_images
 
 
@@ -49,20 +51,21 @@ if st.button('🔨 Translate', type='primary'):
     kmnist_labels = cluster(fil_encoded_kmnist_chars, kmnist_clusters_no)
     sorted_encoded_kmnist = sort_characters_by_labels(fil_encoded_kmnist_chars, kmnist_labels)
     fig = visualize_sorted_characters(sorted_encoded_kmnist, kmnist_autoencoder, binarize=True)
-    st.subheader('Preview of characters clustered together')
+    st.subheader('Found clusters')
     st.write(fig)
+    
+    st.subheader('Learned clusters')
+    fig = visualize_clusters_learned_by_autoencoder(emnist_autoencoder)
+    buf = BytesIO()
+    fig.savefig(buf, format="png", bbox_inches="tight")
+    st.image(buf)
 
     kmnist_clusters_sizes = [len(cluster) for cluster in sorted_encoded_kmnist]
     emnist_clusters_sizes = emnist_autoencoder.quantities
     mapping = match_clusters(kmnist_clusters_sizes, emnist_clusters_sizes)
-
-    st.subheader('Matching clusters')
-    st.write('Found KMNIST sizes of clusters:')
-    st.json(kmnist_clusters_sizes, expanded=False)
-    st.write('Trained EMNIST sizes of clusters:')
-    st.json(list(emnist_clusters_sizes), expanded=False)
-    st.write('Clusters mapping:',)
-    st.json(mapping, expanded=False)
+    st.subheader('Clusters mapping')
+    fig = visualize_mapping(mapping, sorted_encoded_kmnist, emnist_autoencoder, kmnist_autoencoder)
+    st.pyplot(fig)
 
     translated_chars = np.zeros_like(kmnist_chars)
     emnist_labels = np.array([mapping[kmnist_label] for kmnist_label in kmnist_labels])
