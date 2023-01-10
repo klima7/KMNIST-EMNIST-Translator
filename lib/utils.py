@@ -13,25 +13,36 @@ from scipy import sparse
 from sklearn.metrics import pairwise_kernels
 
 
-def sample(data, n_samples):
-    if n_samples is None or n_samples > len(data):
+def sample(*data, n):
+    length = len(data[0])
+    all_lengths = np.array([len(elem) for elem in data])
+    assert np.all(all_lengths == length)
+    
+    if n is None or n > length:
         return data
-    indexes = np.arange(len(data))
+    
+    indexes = np.arange(length)
     np.random.shuffle(indexes)
-    indexes = indexes[:n_samples]
-    sampled_data = data[indexes]
+    indexes = indexes[:n]
+    sampled_data = [data_elem[indexes] for data_elem in data]
+    if len(sampled_data) == 1:
+        return sampled_data[0]
     return sampled_data
 
 
-def visualize_clusters(encoded_characters, ax, n_samples=None):
-    encoded_characters = sample(encoded_characters, n_samples)
+def visualize_clusters(encoded_characters, ax, labels=None, n_samples=None):
+    if labels is None:
+        labels = np.zeros((len(encoded_characters),))
+        
+    encoded_characters, labels = sample(encoded_characters, labels, n=n_samples)
+    
     with warnings.catch_warnings():
         embedding = umap.UMAP(n_neighbors=5, n_components=2).fit(encoded_characters)
-        uplot.points(embedding, width=1200, height=1200, ax=ax, show_legend=False, labels=np.zeros((len(encoded_characters),)))
+        uplot.points(embedding, width=1200, height=1200, ax=ax, show_legend=False, labels=labels)
 
 
 def get_number_of_clusters_with_elbow_method(encoded_characters, ax, n_samples=None):
-    encoded_characters = sample(encoded_characters, n_samples)
+    encoded_characters = sample(encoded_characters, n=n_samples)
     
     # model = KMeans(n_init='auto')
     model = SpectralClustering()
@@ -41,7 +52,7 @@ def get_number_of_clusters_with_elbow_method(encoded_characters, ax, n_samples=N
 
 
 def get_number_of_clusters_with_eigen_values(encoded_characters, ax, n_samples=None):
-    encoded_characters = sample(encoded_characters, n_samples)
+    encoded_characters = sample(encoded_characters, n=n_samples)
 
     adjacency = pairwise_kernels(encoded_characters, metric='rbf', filter_params=True, gamma=2, degree=3, coef0=1)
     laplacian, _ = sparse.csgraph.laplacian(adjacency, normed=True, return_diag=True)
@@ -62,17 +73,18 @@ def cluster(encoded_characters, clusters_no):
     return labels
 
 
-def sort_characters_by_labels(characters, labels):
+def sort_characters_by_labels(characters, real_labels, labels):
     sorted_characters = []
+    sorted_real_labels = []
 
     min_label = np.min(labels)
     max_label = np.max(labels)
 
     for label in range(min_label, max_label+1):
-        label_characters = characters[labels == label]
-        sorted_characters.append(label_characters)
+        sorted_characters.append(characters[labels == label])
+        sorted_real_labels.append(real_labels[labels == label])
         
-    return sorted_characters
+    return sorted_characters, sorted_real_labels
 
 
 def visualize_sorted_characters(sorted_encoded_chars, autoencoder, binarize=True):
@@ -180,3 +192,30 @@ def rewrite_labels(labels):
     for new_label, old_label in enumerate(old_labels):
         new_labels[labels == old_label] = new_label
     return new_labels
+
+
+def show_clusters_consistency_matrix(sorted_labels):
+    unique_labels = np.unique(np.concatenate(sorted_labels))
+    unique_labels = unique_labels[unique_labels >= 0]
+    
+    all_percents = []
+    
+    for label in unique_labels:
+        counts = np.array([np.sum(labels == label) for labels in sorted_labels])
+        total_count = np.sum(counts)
+        percents = counts / total_count
+        all_percents.append(percents)
+        
+    percents_matrix = np.array(all_percents)
+    bin_percents_matrix = percents_matrix > 0.2
+    real_counts = np.sum(bin_percents_matrix, axis=1)
+    pred_counts = np.sum(bin_percents_matrix, axis=0)
+        
+    fig, ax = plt.subplots(1, 1, figsize=(9, 9))
+    ax.matshow(percents_matrix)
+    ax.set_xticks(np.arange(len(sorted_labels)))
+    ax.set_yticks(np.arange(len(unique_labels)))
+    ax.set_xticklabels([f'{x}\n({count})' for x, count in zip(np.arange(len(sorted_labels)), pred_counts)])
+    ax.set_yticklabels([f'{y} ({count})' for y, count in zip(unique_labels, real_counts)])
+    ax.set_ylabel('Real cluster')
+    ax.set_xlabel('Assigned cluster')

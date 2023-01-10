@@ -35,18 +35,20 @@ class PageGenerator:
     def generate_pages(self, max_pages: int = None) -> np.ndarray:
         pages: List[np.ndarray] = []
         text = self.text
+        gen_text = ""
 
         with tqdm(total=len(self.text)) as pbar:
             while len(text) > 0:
                 old_len = len(text)
-                page, text = self.__generate_page(text)
+                page, text, gen_text_part = self.__generate_page(text)
+                gen_text += gen_text_part
                 pages.append(page)
                 pbar.update(old_len - len(text))
 
                 if max_pages is not None and len(pages) >= max_pages:
                     break
 
-        return np.asarray(pages)
+        return np.asarray(pages), gen_text
 
     def __image_corruption(self, image: np.ndarray) -> np.ndarray:
         if np.random.random() <= self.corruption_p:
@@ -91,10 +93,12 @@ class PageGenerator:
         )
         data_images, data_labels = self.prepared_dataset
         i = 0
+        gen_txt = ''
         while i < self.h:
             j = 0
             while j < self.w:
                 if len(txt) == 0:
+                    gen_txt += ' ' * (self.w * (self.h - i - 1) + (self.w - j))
                     i = j = np.inf
                     break
                 char = txt[0]
@@ -102,23 +106,26 @@ class PageGenerator:
                 label = MAPPINGS[char]
                 if char == "\n":
                     i += 1
+                    gen_txt += " " * (self.w - j)
                     j = 0
                     if i == self.h:
                         break
                     continue
                 if char == " ":
                     j += 1
+                    gen_txt += " "
                     continue
                 index = np.random.choice(np.where(data_labels == label)[0])
                 image = self.__image_corruption(data_images[index])
                 page_data[i, j] = image
+                gen_txt += char
                 j += 1
             i += 1
-        return np.clip(pepper - page_data + salt, 0, 1), txt
+        return np.clip(pepper - page_data + salt, 0, 1), txt, gen_txt
 
 
 def generate_pages(text, dataset, corruption_prob, salt_prob, rotation, max_scale, unique_characters):
-    pages_data = PageGenerator(
+    pages_data, gen_text = PageGenerator(
         text,
         dataset,
         corruption_p=corruption_prob,
@@ -128,7 +135,7 @@ def generate_pages(text, dataset, corruption_prob, salt_prob, rotation, max_scal
         unique_characters_per_class=unique_characters
     ).generate_pages()
 
-    return [reshape_page_data_to_image(page_data) for page_data in pages_data]
+    return [reshape_page_data_to_image(page_data) for page_data in pages_data], gen_text
 
 
 def reshape_page_data_to_image(page_data: np.ndarray, h=32, w=32) -> np.ndarray:

@@ -26,7 +26,7 @@ with st.expander('Distortions', expanded=False):
 if st.button('🔨 Generate', type='primary'):
     text = book[slider_start:slider_end]
     dataset = load_emnist_cached() if dataset == 'EMNIST' else load_kmnist_cached()
-    images = generate_pages(text, dataset, slider_corruption, slider_noise, slider_rotation, slider_scale, slider_variants)
+    images, _ = generate_pages(text, dataset, slider_corruption, slider_noise, slider_rotation, slider_scale, slider_variants)
     st.success('Pages generated successfully!', icon="✅")
 
     st.header('📄 Output')
