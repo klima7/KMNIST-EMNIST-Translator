@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from einops import rearrange
 
 from .data import MAPPINGS
+from .utils import create_count_image, create_arrow_image
 
 
 def load_pages_from_dir(dir_path, pages_count):
@@ -69,8 +70,8 @@ def show_datasets(emnist_chars, kmnist_chars, samples_count):
 
 def test_autoencoder(autoencoder, characters, samples_count, binarize=False):
     selected_chars = np.array(random.choices(characters, k=samples_count))
-    encoded_chars = autoencoder.encoder.predict(selected_chars)
-    decoded_chars = autoencoder.decoder.predict(encoded_chars)
+    encoded_chars = autoencoder.encoder.predict(selected_chars, verbose=0)
+    decoded_chars = autoencoder.decoder.predict(encoded_chars, verbose=0)
     if binarize:
         decoded_chars = (decoded_chars > 0.5) * 1.0
     image = np.vstack([np.hstack(selected_chars), np.hstack(np.squeeze(decoded_chars))])
@@ -96,3 +97,68 @@ def show_characters_representatives(representative_chars):
     _, ax = plt.subplots(1, 1, figsize=(12, 12))
     ax.imshow(image)
     plt.grid(None)
+
+
+def show_subconfig_characters(subconfig):
+    total = np.sum(subconfig.counts)
+    elems = []
+    
+    for i, (char, count) in enumerate(zip(subconfig.characters, subconfig.counts)):
+        text = create_count_image(i, count, total)
+        row = np.hstack([text, char])
+        elems.append(row)
+        
+    for _ in range((4 - len(elems) % 4) % 4):
+        elems.append(np.zeros_like(elems[0]))
+        
+    image = rearrange(elems, '(H W) h w -> (H h) (W w)', W=4)
+    fig, ax = plt.subplots(1, 1, figsize=(10, (len(elems) / 4) * 2))
+    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False)
+    ax.imshow(image)
+    ax.grid(None)
+    return fig
+
+
+def create_mapping(count_from, counts_to):
+    idxs_from = np.flip(np.argsort(count_from))
+    idxs_to = np.flip(np.argsort(counts_to))
+    
+    mapping = {}
+
+    for i, idx_from in enumerate(idxs_from):
+        if i < len(idxs_to):
+            mapping[idx_from] = idxs_to[i]
+        else:
+            mapping[idx_from] = idxs_to[-1]
+
+    return mapping
+
+
+def show_mapping(conf): # mapping, sorted_encoded_kmnist, emnist_ae, kmnist_ae
+    econf, kconf = conf.emnist, conf.kmnist
+    arrow = create_arrow_image()
+    
+    e_total = sum(econf.counts)
+    k_total = sum(kconf.counts)
+
+    rows = []
+    for e_label in np.flip(np.argsort(econf.counts)):
+        k_label = conf.mapping[e_label]
+        
+        e_count = econf.counts[e_label]
+        k_count = kconf.counts[k_label]
+        
+        e_text = create_count_image(e_label, e_count, e_total)
+        k_text = create_count_image(k_label, k_count, k_total)
+        
+        e_char = econf.characters[e_label]
+        k_char = kconf.characters[k_label]
+        
+        row = np.hstack([k_text, k_char, arrow, e_text, e_char])
+        rows.append(row)
+        
+    image = np.vstack(rows)
+    _, ax = plt.subplots(1, 1, figsize=(5, len(econf.counts)*1))
+    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False)
+    ax.imshow(image)
+    ax.grid(None)

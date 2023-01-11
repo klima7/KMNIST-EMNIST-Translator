@@ -10,3 +10,4 @@ umap-learn
 umap-learn[plot]
 scikit-learn
 yellowbrick
+joblib

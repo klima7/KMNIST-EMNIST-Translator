@@ -6,11 +6,11 @@ from keras.models import Model, Sequential
 from .base import BaseAutoencoder
 
 
-class TestAutoencoder(BaseAutoencoder):
+class SimpleAutoencoder(BaseAutoencoder):
 
-    def __init__(self, path: str, output_features: int = 16) -> None:
+    def __init__(self, output_features: int = 16) -> None:
         self.output_features = output_features
-        super().__init__(path)
+        super().__init__()
 
     def _create_encoder_and_decoder(self):
         encoder_conv_part = self.__encoder_conv_part()
