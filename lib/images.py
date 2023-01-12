@@ -17,7 +17,7 @@ def zip_images(images):
 
     for i, image in enumerate(images):
         path = os.path.join(images_dir_path, f'{i}.png')
-        cv2.imwrite(path, image*255)
+        cv2.imwrite(path, image)
 
     zip_path = os.path.join(temp_dir_path, 'images')
     shutil.make_archive(zip_path, 'zip', images_dir_path)

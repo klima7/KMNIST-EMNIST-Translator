@@ -16,7 +16,6 @@ def load_pages_from_dir(dir_path, pages_count):
         page_name = f'{page_no}.png'
         path = str(Path(dir_path) / page_name)
         page = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-        page = page.astype(np.float64) / 255
         pages.append(page)
     return np.array(pages)
 
@@ -24,16 +23,13 @@ def load_pages_from_dir(dir_path, pages_count):
 def load_dataset_pages(name, pages_count):
     emnist_path = Path('..') / 'datasets' / name / 'EMNIST'
     kmnist_path = Path('..') / 'datasets' / name / 'KMNIST'
-    text_path = Path('..') / 'datasets' / name / 'text.txt'
+    text_path = Path('..') / 'datasets' / name / 'text'
 
-    emnist_pages = load_pages_from_dir(emnist_path, pages_count)
-    kmnist_pages = load_pages_from_dir(kmnist_path, pages_count)
-    
-    with open(str(text_path), 'r') as file:
-        text = file.read()
-        labels = np.array([MAPPINGS[c] for c in text])
+    emnist_pages = load_pages_from_dir(emnist_path, pages_count).astype(np.float64) / 255
+    kmnist_pages = load_pages_from_dir(kmnist_path, pages_count).astype(np.float64) / 255
+    text_pages = load_pages_from_dir(text_path, pages_count)
 
-    return emnist_pages, kmnist_pages, labels
+    return emnist_pages, kmnist_pages, text_pages
 
 
 def filter_white_characters(emnist_chars, kmnist_chars, labels, threshold):
@@ -65,7 +61,6 @@ def show_datasets(emnist_chars, kmnist_chars, samples_count):
     image = np.vstack([np.hstack(selected_emnist_chars), np.hstack(np.squeeze(selected_kmnist_chars))])
     fig, ax = plt.subplots(figsize=(13, 5))
     ax.imshow(image, 'gray')
-    ax.grid(None)
 
 
 def test_autoencoder(autoencoder, characters, samples_count, binarize=False):
@@ -78,7 +73,6 @@ def test_autoencoder(autoencoder, characters, samples_count, binarize=False):
 
     fig, ax = plt.subplots(figsize=(13, 5))
     ax.imshow(image, 'gray')
-    plt.grid(None)
 
 
 def create_characters_representatives(sorted_encoded_chars, autoencoder):
