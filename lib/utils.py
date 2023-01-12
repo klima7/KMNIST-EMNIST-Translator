@@ -101,8 +101,11 @@ def show_sorted_characters(sorted_encoded_chars, autoencoder, binarize=True):
 
 
 def show_clusters_consistency_matrix(sorted_labels):
-    unique_labels = np.unique(np.concatenate(sorted_labels))
+    unique_labels, counts = np.unique(np.concatenate(sorted_labels), return_counts=True)
     unique_labels = unique_labels[unique_labels >= 0]
+    counts = counts[unique_labels >= 0]
+    ul_sorted_idxs = np.flip(np.argsort(counts))
+    unique_labels = unique_labels[ul_sorted_idxs]
     
     ordered_zip = sorted(enumerate(sorted_labels), key=lambda x: len(x[1]), reverse=True)
     ordered_indexes = [entry[0] for entry in ordered_zip]
@@ -129,7 +132,7 @@ def show_clusters_consistency_matrix(sorted_labels):
     ax.set_yticklabels([f'{y} ({count})' for y, count in zip(unique_labels, real_counts)])
     ax.tick_params(axis="x", bottom=True, top=True, labelbottom=True, labeltop=True)
     ax.tick_params(axis="y", left=True, right=True, labelleft=True, labelright=True)
-    ax.set_ylabel('Real cluster')
+    ax.set_ylabel('Real cluster (sorted by size)')
     ax.set_xlabel('Assigned cluster (sorted by size)')
 
 
