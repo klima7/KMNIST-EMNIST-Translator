@@ -24,7 +24,7 @@ def zip_images(images):
     return zip_path + '.zip'
 
 
-def get_uploaded_images(uploaded_files):
+def get_uploaded_images(uploaded_files, with_names=False):
     images = []
     uploaded_files = sorted(uploaded_files, key=lambda uf: int(uf.name[:-4]))
     temp_dir_path = Path(tempfile.mkdtemp())
@@ -36,7 +36,9 @@ def get_uploaded_images(uploaded_files):
             f.write(file.read())
 
         image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-        image = image.astype(np.float64) / 255
         images.append(image)
 
-    return np.array(images)
+    images = np.array(images)
+    names = [file.name[:-4] for file in uploaded_files]
+    
+    return (images, names) if with_names else images

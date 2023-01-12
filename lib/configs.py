@@ -82,3 +82,10 @@ CONFIGS = [
         kmnist_ae=SimpleAutoencoder(output_features=25)
     )
 ]
+
+
+def get_config_by_name(name):
+    for config in CONFIGS:
+        if config.name == name:
+            return config
+    assert False

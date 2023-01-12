@@ -90,16 +90,15 @@ def show_sorted_characters(sorted_encoded_chars, autoencoder, binarize=True):
         
     fig, ax = plt.subplots(1, 1, figsize=(12, len(sorted_encoded_chars)*2))
     plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False)
-    ax.imshow(image)
-    ax.grid(None)
+    ax.imshow(1-image, cmap='gray')
     ax.set_title('Sorted characters from found clusters')
     return fig
 
 
 def show_clusters_consistency_matrix(sorted_labels):
-    unique_labels, counts = np.unique(np.concatenate(sorted_labels), return_counts=True)
-    unique_labels = unique_labels[unique_labels >= 0]
-    counts = counts[unique_labels >= 0]
+    aggregated = np.concatenate(sorted_labels)
+    aggregated = aggregated[aggregated >= 0]
+    unique_labels, counts = np.unique(aggregated, return_counts=True)
     ul_sorted_idxs = np.flip(np.argsort(counts))
     unique_labels = unique_labels[ul_sorted_idxs]
     
@@ -121,7 +120,7 @@ def show_clusters_consistency_matrix(sorted_labels):
     pred_counts = np.sum(bin_percents_matrix, axis=0)
         
     fig, ax = plt.subplots(1, 1, figsize=(9, 9))
-    ax.matshow(percents_matrix)
+    ax.matshow(1-percents_matrix, cmap='gray')
     ax.set_xticks(np.arange(len(sorted_labels)))
     ax.set_yticks(np.arange(len(unique_labels)))
     ax.set_xticklabels([f'{x}\n({count})' for x, count in zip(ordered_indexes, pred_counts)])
@@ -130,6 +129,8 @@ def show_clusters_consistency_matrix(sorted_labels):
     ax.tick_params(axis="y", left=True, right=True, labelleft=True, labelright=True)
     ax.set_ylabel('Real cluster (sorted by size)')
     ax.set_xlabel('Assigned cluster (sorted by size)')
+    ax.grid(True, which='both')
+    return fig
 
 
 def create_count_image(no, count, total):

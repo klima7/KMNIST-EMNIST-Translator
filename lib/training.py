@@ -108,8 +108,7 @@ def show_subconfig_characters(subconfig):
     image = rearrange(elems, '(H W) h w -> (H h) (W w)', W=4)
     fig, ax = plt.subplots(1, 1, figsize=(10, (len(elems) / 4) * 2))
     plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False)
-    ax.imshow(image)
-    ax.grid(None)
+    ax.imshow(1-image, cmap='gray')
     return fig
 
 
@@ -154,5 +153,4 @@ def show_mapping(conf): # mapping, sorted_encoded_kmnist, emnist_ae, kmnist_ae
     image = np.vstack(rows)
     _, ax = plt.subplots(1, 1, figsize=(5, len(econf.counts)*1))
     plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False)
-    ax.imshow(image)
-    ax.grid(None)
+    ax.imshow(1-image, cmap='gray')
