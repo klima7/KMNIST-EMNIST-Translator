@@ -5,13 +5,9 @@ import numpy as np
 import cv2
 import umap
 from umap import plot as uplot
-from sklearn.cluster import KMeans, SpectralClustering
-from yellowbrick.cluster import KElbowVisualizer
 from scipy.linalg import eigh
 from scipy import sparse
 from sklearn.metrics import pairwise_kernels
-
-from .clusterizer import EnhancedSpectralClustering
 
 
 def sample(*data, n):
