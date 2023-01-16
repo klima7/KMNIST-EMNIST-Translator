@@ -8,6 +8,7 @@ from umap import plot as uplot
 from scipy.linalg import eigh
 from scipy import sparse
 from sklearn.metrics import pairwise_kernels
+from tqdm import tqdm
 
 
 def sample(*data, n):
@@ -25,6 +26,15 @@ def sample(*data, n):
     if len(sampled_data) == 1:
         return sampled_data[0]
     return sampled_data
+
+
+def filter_noise(images):
+    filtered_images = []
+    for image in tqdm(images, total=len(images)):
+        filtered = cv2.medianBlur((image[..., np.newaxis]*255).astype(np.uint8), 3)
+        filtered = (filtered / 255).astype(images.dtype)
+        filtered_images.append(filtered)
+    return np.array(filtered_images)
 
 
 def visualize_clusters(encoded_characters, ax=None, labels=None, n_samples=None):

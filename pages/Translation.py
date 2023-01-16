@@ -7,7 +7,7 @@ from umap import plot as uplot
 
 from lib.configs import CONFIGS, get_config_by_name
 from lib.images import get_uploaded_images
-from lib.utils import visualize_clusters, sample, sort_by_labels, show_sorted_characters, show_clusters_consistency_matrix
+from lib.utils import filter_noise, visualize_clusters, sample, sort_by_labels, show_sorted_characters, show_clusters_consistency_matrix
 from lib.data import MAPPINGS
 
 
@@ -47,6 +47,14 @@ text_pages = st.file_uploader('Text pages (optional)', accept_multiple_files=Tru
 if st.button('🔨 Translate', type='primary'):
     kmnist_pages, pages_names = get_uploaded_images(kmnist_pages, with_names=True)
     kmnist_pages = kmnist_pages.astype(np.float64) / 255
+    
+    st.subheader('Filtering noise')
+    example_original = kmnist_pages[0, :256, :256]
+    kmnist_pages = filter_noise(kmnist_pages)
+    example_filtered = kmnist_pages[0, :256, :256]
+    filter_example = np.hstack([example_original, example_filtered])
+    st.image(filter_example)
+    
     kmnist_pages = 1 - kmnist_pages
     all_chars = rearrange(kmnist_pages, 'p (H h) (W w) -> (p H W) h w', h=32, w=32)
 

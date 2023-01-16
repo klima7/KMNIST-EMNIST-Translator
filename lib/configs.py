@@ -80,7 +80,12 @@ CONFIGS = [
         name='clean',
         emnist_ae=SimpleAutoencoder(output_features=30),
         kmnist_ae=SimpleAutoencoder(output_features=25)
-    )
+    ),
+    Config(
+        name='noise_only',
+        emnist_ae=SimpleAutoencoder(output_features=12),
+        kmnist_ae=SimpleAutoencoder(output_features=11)
+    ),
 ]
 
 

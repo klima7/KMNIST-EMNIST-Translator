@@ -89,8 +89,7 @@ def show_characters_representatives(representative_chars):
         representative_chars = np.vstack([representative_chars, np.zeros((1, 32, 32))])
     image = rearrange(representative_chars, '(H W) h w -> (H h) (W w)', W=7)
     _, ax = plt.subplots(1, 1, figsize=(12, 12))
-    ax.imshow(image)
-    plt.grid(None)
+    ax.imshow(1-image, cmap='gray')
 
 
 def show_subconfig_characters(subconfig):
@@ -127,7 +126,7 @@ def create_mapping(count_from, counts_to):
     return mapping
 
 
-def show_mapping(conf): # mapping, sorted_encoded_kmnist, emnist_ae, kmnist_ae
+def show_mapping(conf):
     econf, kconf = conf.emnist, conf.kmnist
     arrow = create_arrow_image()
     
@@ -135,8 +134,8 @@ def show_mapping(conf): # mapping, sorted_encoded_kmnist, emnist_ae, kmnist_ae
     k_total = sum(kconf.counts)
 
     rows = []
-    for e_label in np.flip(np.argsort(econf.counts)):
-        k_label = conf.mapping[e_label]
+    for k_label in np.flip(np.argsort(kconf.counts)):
+        e_label = conf.mapping[k_label]
         
         e_count = econf.counts[e_label]
         k_count = kconf.counts[k_label]
