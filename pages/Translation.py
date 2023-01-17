@@ -7,7 +7,7 @@ from umap import plot as uplot
 
 from lib.configs import CONFIGS, get_config_by_name
 from lib.images import get_uploaded_images
-from lib.utils import filter_noise, visualize_clusters, sample, sort_by_labels, show_sorted_characters, show_clusters_consistency_matrix
+from lib.utils import filter_noise, visualize_clusters, sample, sort_by_labels, show_sorted_characters
 from lib.data import MAPPINGS
 
 
@@ -18,7 +18,7 @@ def show_umap(encoded_chars, labels, true_labels):
     else:
         true_labels_present = True
         
-    samp_encoded_chars, samp_labels, samp_true_labels = sample(encoded_chars, labels, true_labels, n=7_000)
+    samp_encoded_chars, samp_labels, samp_true_labels = sample(encoded_chars, labels, true_labels, n=5_000)
     embedding = umap.UMAP(n_neighbors=5, n_components=2).fit(samp_encoded_chars)
     
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))

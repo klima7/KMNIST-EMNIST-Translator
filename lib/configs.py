@@ -95,20 +95,10 @@ CONFIGS = [
         kmnist_ae=SimpleAutoencoder(output_features=11)
     ),
     Config(
-        name='small_distortions_1_char',
-        emnist_ae=SimpleAutoencoder(output_features=12),
-        kmnist_ae=SimpleAutoencoder(output_features=12)
-    ),
-    Config(
         name='mid_distortions_1_char',
         emnist_ae=SimpleAutoencoder(output_features=11),
-        kmnist_ae=SimpleAutoencoder(output_features=11)
+        kmnist_ae=SimpleAutoencoder(output_features=12)
     ),
-    Config(
-        name='max_distortions_1_char',
-        emnist_ae=SimpleAutoencoder(output_features=12),
-        kmnist_ae=SimpleAutoencoder(output_features=11)
-    )
 ]
 
 
