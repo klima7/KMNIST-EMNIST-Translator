@@ -99,6 +99,11 @@ CONFIGS = [
         emnist_ae=SimpleAutoencoder(output_features=11),
         kmnist_ae=SimpleAutoencoder(output_features=12)
     ),
+    Config(
+        name='min_distortions_2_char',
+        emnist_ae=SimpleAutoencoder(output_features=12),
+        kmnist_ae=SimpleAutoencoder(output_features=12)
+    )
 ]
 
 
