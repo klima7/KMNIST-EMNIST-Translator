@@ -17,7 +17,7 @@ class BaseAutoencoder(ABC):
     def __compile(self):
         self.encoder.compile()
         self.decoder.compile()
-        self.model.compile(optimizer='adam', loss='mse')
+        self.model.compile(optimizer='adam', loss='bce')
 
     @abstractmethod
     def _create_encoder_and_decoder(self):

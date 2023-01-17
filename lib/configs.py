@@ -28,14 +28,17 @@ class Config:
         
         self.emnist.save()
         self.kmnist.save()
-        if self.mapping is not None:
-            joblib.dump(self.mapping, self.path_mapping)
+        self.save_mapping()
 
     def load(self):
         self.emnist.load()
         self.kmnist.load()
         if self.path_mapping.exists():
             self.mapping = joblib.load(self.path_mapping)
+            
+    def save_mapping(self):
+        if self.mapping is not None:
+            joblib.dump(self.mapping, self.path_mapping)
             
 
 class SubConfig:
@@ -86,6 +89,26 @@ CONFIGS = [
         emnist_ae=SimpleAutoencoder(output_features=12),
         kmnist_ae=SimpleAutoencoder(output_features=11)
     ),
+    Config(
+        name='min_distortions_1_char',
+        emnist_ae=SimpleAutoencoder(output_features=12),
+        kmnist_ae=SimpleAutoencoder(output_features=11)
+    ),
+    Config(
+        name='small_distortions_1_char',
+        emnist_ae=SimpleAutoencoder(output_features=12),
+        kmnist_ae=SimpleAutoencoder(output_features=12)
+    ),
+    Config(
+        name='mid_distortions_1_char',
+        emnist_ae=SimpleAutoencoder(output_features=11),
+        kmnist_ae=SimpleAutoencoder(output_features=11)
+    ),
+    Config(
+        name='max_distortions_1_char',
+        emnist_ae=SimpleAutoencoder(output_features=12),
+        kmnist_ae=SimpleAutoencoder(output_features=11)
+    )
 ]
 
 

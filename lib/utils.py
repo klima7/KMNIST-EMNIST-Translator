@@ -9,6 +9,8 @@ from scipy.linalg import eigh
 from scipy import sparse
 from sklearn.metrics import pairwise_kernels
 from tqdm import tqdm
+from sklearn.cluster import KMeans, SpectralClustering
+from yellowbrick.cluster import KElbowVisualizer
 
 
 def sample(*data, n):
@@ -61,13 +63,24 @@ def get_number_of_clusters_with_eigen_values(encoded_characters, n_samples=None)
     _, ax = plt.subplots(1, 1, figsize=(10, 5))
     ax.plot(lambdas)
     diffs = lambdas[1:] - lambdas[:-1]
-    elbow = np.argmax(diffs)+1
+    elbow = np.argmax(diffs[10:])+10+1
     ax.axvline(x=elbow, color='black', linestyle='--')
     ax.annotate(str(elbow), (elbow+0.5, 0), fontsize=20)
     ax.set_title('Eigenvalues used to find number of clusters')
     ax.set_xlabel('Index of eigenvalue')
     ax.set_ylabel('Eigenvalue value')
     return elbow
+
+
+def get_number_of_clusters_with_elbow_method(encoded_characters, n_samples=None):
+    encoded_characters = sample(encoded_characters, n=n_samples)
+    
+    model = KMeans(n_init='auto')
+    # model = SpectralClustering()
+    _, ax = plt.subplots(1, 1, figsize=(10, 5))
+    visualizer = KElbowVisualizer(model, k=(15, 50), timings=False, ax=ax)
+    visualizer.fit(encoded_characters)
+    return visualizer.elbow_value_
 
 
 def sort_by_labels(data, labels):

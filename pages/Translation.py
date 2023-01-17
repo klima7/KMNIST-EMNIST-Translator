@@ -82,13 +82,7 @@ if st.button('🔨 Translate', type='primary'):
     sorted_encoded_chars = sort_by_labels(encoded_chars, labels)
     fig = show_sorted_characters(sorted_encoded_chars, kconf.autoencoder, binarize=True)
     st.write(fig)
-    
-    if len(true_labels) == len(labels):
-        st.subheader('Relations between true and predicted clusters')
-        sorted_true_labels = sort_by_labels(true_labels, labels)
-        fig = show_clusters_consistency_matrix(sorted_true_labels)
-        st.pyplot(fig)
-        
+
     trans_chars = np.zeros_like(all_chars)
     trans_labels = np.array([config.mapping[label] for label in labels])
     trans_chars[~is_white_character] = econf.characters[trans_labels]
