@@ -33,6 +33,15 @@ class Config:
     def load(self):
         self.emnist.load()
         self.kmnist.load()
+        self.load_mapping()
+            
+    def load_necessary(self):
+        self.kmnist.load_autoencoder()
+        self.kmnist.load_clusterizer()
+        self.emnist.load_characters()
+        self.load_mapping()
+        
+    def load_mapping(self):
         if self.path_mapping.exists():
             self.mapping = joblib.load(self.path_mapping)
             
@@ -68,12 +77,24 @@ class SubConfig:
             np.save(str(self.path_counts), self.counts)
 
     def load(self):
+        self.load_autoencoder()
+        self.load_clusterizer()
+        self.load_characters()
+        self.load_counts()
+            
+    def load_autoencoder(self):
         if self.path_autoencoder.exists():
             self.autoencoder.load(self.path_autoencoder)
+            
+    def load_clusterizer(self):
         if self.path_clusterizer.exists():
             self.clusterizer = joblib.load(self.path_clusterizer)
+            
+    def load_characters(self):
         if self.path_characters.exists():
             self.characters = np.load(str(self.path_characters))
+            
+    def load_counts(self):
         if self.path_counts.exists():
             self.counts = np.load(str(self.path_counts))
 
@@ -102,6 +123,11 @@ CONFIGS = [
     Config(
         name='min_distortions_2_char',
         emnist_ae=SimpleAutoencoder(output_features=12),
+        kmnist_ae=SimpleAutoencoder(output_features=12)
+    ),
+    Config(
+        name='min_distortions_100_char',
+        emnist_ae=SimpleAutoencoder(output_features=9),
         kmnist_ae=SimpleAutoencoder(output_features=12)
     )
 ]
