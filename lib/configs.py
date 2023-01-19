@@ -122,8 +122,8 @@ CONFIGS = [
     ),
     Config(
         name='min_distortions_2_char',
-        emnist_ae=SimpleAutoencoder(output_features=12),
-        kmnist_ae=SimpleAutoencoder(output_features=12)
+        emnist_ae=SimpleAutoencoder(output_features=8),
+        kmnist_ae=SimpleAutoencoder(output_features=8)
     ),
     Config(
         name='min_distortions_100_char',
