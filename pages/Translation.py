@@ -100,12 +100,16 @@ if st.button('🔨 Translate', type='primary'):
         trans_pages = 1 - trans_pages
         trans_pages = [page for page in trans_pages]
     
-    for name, trans_page, oryginal_page, page_text in zip(pages_names, trans_pages, kmnist_pages, structured_text):
+    for i in range(len(trans_pages)):
+        name = pages_names[i]
+        trans_page = trans_pages[i]
+        oryginal_page = kmnist_pages[i]
         st.subheader(f'Page {name}')
         
         st.image(trans_page)
         
         if len(true_labels) == len(labels):
+            page_text = structured_text[i]
             with st.expander('Book text', expanded=False):
                 st.text('\n'.join(page_text))
                 

@@ -17,12 +17,11 @@ with st.expander('Dataset', expanded=True):
     dataset_name = st.selectbox('Name', ('EMNIST', 'KMNIST', 'Text'), index=1)
     slider_variants = st.slider("Number of each letter variants", min_value=1, max_value=100)
 
-if dataset_name != 'Text':
-    with st.expander('Distortions', expanded=True):
-        slider_corruption = st.slider("Corruption probability", min_value=0.0, max_value=1.0, step=0.01, value=0.3)
-        slider_rotation = st.slider("Max rotation radius", max_value=45, value=30)
-        slider_scale = st.slider("Max scale factor", min_value=1.0, max_value=1.30, step=0.01, value=1.15)
-        slider_noise = st.slider("Salt & Pepper noise coverage", min_value=0.0, max_value=1.0, step=0.01, value=0.05)
+with st.expander('Distortions', expanded=True):
+    slider_corruption = st.slider("Corruption probability", min_value=0.0, max_value=1.0, step=0.01, value=0.3)
+    slider_rotation = st.slider("Max rotation radius", max_value=45, value=30)
+    slider_scale = st.slider("Max scale factor", min_value=1.0, max_value=1.30, step=0.01, value=1.15)
+    slider_noise = st.slider("Salt & Pepper noise coverage", min_value=0.0, max_value=1.0, step=0.01, value=0.05)
 
 if st.button('🔨 Generate', type='primary'):
     text = book[slider_start:slider_end]
